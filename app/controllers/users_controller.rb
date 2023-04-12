@@ -1,10 +1,13 @@
 class UsersController < ApplicationController
-  before_action :authenticate_user!, except: [:index]
-  before_action :is_matching_login_user, only: [:show, :edit, :update]
+  before_action :is_matching_login_user, only: [:edit, :update]
 
   def show
     @user = User.find(params[:id])
     @books = @user.books
+  end
+
+  def index
+    @users = User.all
   end
 
   def edit
@@ -12,9 +15,14 @@ class UsersController < ApplicationController
   end
 
   def update
-    user = User.find(params[:id])
-    user.update(user_params)
-    redirect_to user_path(user.id)
+    @user = User.find(params[:id])
+    @user_id = current_user.id
+    if @user.update(user_params)
+      redirect_to @user
+      flash[:notice] = "You have updated user successfully."
+    else
+      render :edit
+    end
   end
 
 
